@@ -3,7 +3,11 @@ module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        roboto: ['Roboto_400Regular', 'Roboto_700Bold'], 
+      },
+    },
   },
   future: {
     hoverOnlyWhenSupported: true,
