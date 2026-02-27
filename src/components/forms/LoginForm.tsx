@@ -21,7 +21,7 @@ const LoginForm = (props: Props) => {
                 </View>
 
                 <View>
-                    <Text className="mb-2">Email</Text>
+                    <Text className="mb-2 mt-6">Email</Text>
                     <TextInput
                         placeholder="email@exemplo.com"
                         keyboardType="email-address"
@@ -31,7 +31,7 @@ const LoginForm = (props: Props) => {
                 </View>
 
                 <View>
-                    <Text className="mb-2">Senha</Text>
+                    <Text className="mb-2 mt-6">Senha</Text>
                     <TextInput
                         placeholder="••••••••"
                         secureTextEntry={true}
@@ -40,7 +40,7 @@ const LoginForm = (props: Props) => {
                 </View>
 
                 <View>
-                    <Text className="mb-2">Telefone</Text>
+                    <Text className="mb-2 mt-6">Telefone</Text>
                     <TextInput
                         placeholder="(00) 00000-0000"
                         keyboardType="phone-pad"
