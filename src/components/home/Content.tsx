@@ -32,11 +32,11 @@ const  Content =()=> {
           </TouchableOpacity>
 
           <TouchableOpacity className="bg-gray-200 px-6 py-3 rounded-lg">
-            {/* <Link href="/signup" asChild>
+            <Link href="/signup" asChild>
               <Text className="text-black text-lg font-roboto font-medium">
                 Comece Agora
               </Text>
-            </Link> */}
+            </Link>
           </TouchableOpacity>
         </View>
       </View>
