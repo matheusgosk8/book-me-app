@@ -15,7 +15,7 @@ const Content = () => {
         </Text>
 
         {/* Descrição */}
-        <Text className="text-lg md:text-xl text-gray-300 dark:text-gray-400 text-center">
+        <Text className="text-lg md:text-xl text-white text-white text-center">
           Book Me é um app de agendamento que conecta profissionais a seus clientes.
           Clientes podem buscar serviços e marcar horários diretamente no app,
           e os profissionais recebem notificações para organizar sua agenda.
