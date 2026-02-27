@@ -41,18 +41,18 @@ const LoginForm = (props: Props) => {
 
     return (
         <View className="flex-1 w-full max-h-dvh">
-            <Text className="text-white text-2xl font-bold mb-4">Login</Text>
+            <Text className="color-[#EEEEEE] text-2xl font-bold mb-4">Login</Text>
 
-            <Text className="text-white mb-6 text-base">
+            <Text className="color-[#EEEEEE] mb-6 text-base">
                 Bem vindo ao Book Me, o app de agendamento que conecta profissionais a seus clientes. Clientes podem buscar serviços e marcar horários diretamente no app, e os profissionais recebem notificações para organizar sua agenda.
             </Text>
 
             <View>
                 <View>
-                    <Text className="text-white mt-1">Nome</Text>
+                    <Text className="color-[#EEEEEE] mt-1">Nome</Text>
                     <TextInput
                         placeholder="Seu nome"
-                        placeholderTextColor="#B8C1EC"
+                        placeholderTextColor="#CCCCFF"
                         className="bg-white/10 rounded-md px-4 py-3"
                         value={values.nome}
                         onChangeText={text => handleFieldChange('nome', text)}
@@ -64,10 +64,10 @@ const LoginForm = (props: Props) => {
                 </View>
 
                 <View>
-                    <Text className="text-white mt-1">Email</Text>
+                    <Text className="color-[#EEEEEE] mt-1">Email</Text>
                     <TextInput
                         placeholder="email@exemplo.com"
-                        placeholderTextColor="#B8C1EC"
+                        placeholderTextColor="#CCCCFF"
                         keyboardType="email-address"
                         autoCapitalize="none"
                         className="bg-white/10 rounded-md px-4 py-3"
@@ -81,10 +81,10 @@ const LoginForm = (props: Props) => {
                 </View>
 
                 <View>
-                    <Text className="text-white mt-1">Senha</Text>
+                    <Text className="color-[#EEEEEE] mt-1">Senha</Text>
                     <TextInput
                         placeholder="••••••••"
-                        placeholderTextColor="#B8C1EC"
+                        placeholderTextColor="#CCCCFF"
                         secureTextEntry={true}
                         className="bg-white/10 rounded-md px-4 py-3"
                         value={values.senha}
@@ -97,10 +97,10 @@ const LoginForm = (props: Props) => {
                 </View>
 
                 <View>
-                    <Text className="text-white mt-1">Telefone</Text>
+                    <Text className="color-[#EEEEEE] mt-1">Telefone</Text>
                     <TextInput
                         placeholder="(00) 00000-0000"
-                        placeholderTextColor="#B8C1EC"
+                        placeholderTextColor="#CCCCFF"
                         keyboardType="phone-pad"
                         className="bg-white/10 rounded-md px-4 py-3"
                         value={values.telefone}
@@ -113,7 +113,7 @@ const LoginForm = (props: Props) => {
                 </View>
 
                 <Pressable className="bg-black px-6 py-3 rounded-lg items-center mt-4">
-                    <Text className="text-white text-lg">Entrar</Text>
+                    <Text className="color-[#EEEEEE] text-lg">Entrar</Text>
                 </Pressable>
             </View>
         </View>
