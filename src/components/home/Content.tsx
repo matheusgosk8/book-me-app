@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native'
 import { Link } from 'expo-router'
 
-const  Content =()=> {
+const Content = () => {
 
 
 
@@ -11,13 +11,13 @@ const  Content =()=> {
 
         {/* Título */}
         <Text className="text-5xl font-roboto font-bold text-white">
-          Book Me 
+          Book Me
         </Text>
 
         {/* Descrição */}
-        <Text className="text-lg md:text-xl text-gray-300 dark:text-gray-400 text-center">
-          Book Me é um app de agendamento que conecta profissionais a seus clientes. 
-          Clientes podem buscar serviços e marcar horários diretamente no app, 
+        <Text className="text-lg md:text-xl text-white text-white text-center">
+          Book Me é um app de agendamento que conecta profissionais a seus clientes.
+          Clientes podem buscar serviços e marcar horários diretamente no app,
           e os profissionais recebem notificações para organizar sua agenda.
         </Text>
 
