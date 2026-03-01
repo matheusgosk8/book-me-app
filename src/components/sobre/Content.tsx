@@ -9,7 +9,6 @@ import {
   StatusBar,
   StyleSheet,
   Pressable,
-  TouchableOpacity,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
@@ -35,8 +34,7 @@ export default function Content() {
 
 
   return (
-    <FadeInSection scrollY={scrollY}>
-            <View className="bg-[#0a0a0f]">
+    <View >
       <StatusBar barStyle="light-content" backgroundColor="#0a0a0f" />
 
       <ScrollView
@@ -45,19 +43,16 @@ export default function Content() {
         onScroll={handleScroll}
         scrollEventThrottle={16}
       >
+        {/* ====== HERO ====== */}
         <View
-          className="px-6 flex mb-4 flex-col gap-10"
-
+          className="px-6 mb-12 flex flex-col gap-10"
+          style={{ minHeight: SCREEN_HEIGHT }}
         >
-          <View >
+          <FadeInSection scrollY={scrollY}>
             <View className="px-6 pt-16 pb-10 items-center">
               <View className="flex-row items-center w-full mb-6 justify-between">
                 <View className="flex-1 items-start">
-                  <Link href="/" asChild>
-                    <TouchableOpacity hitSlop={12}>
-                      <FontAwesome5 name="arrow-left" size={20} color="#fff" />
-                    </TouchableOpacity>
-                  </Link>                
+                  <FontAwesome5 name="arrow-left" size={20} color="#fff" />
                 </View>
                 <View className="flex-1 items-center">
                   <View className="bg-blue-500/10 px-4 py-1.5 rounded-full">
@@ -69,7 +64,7 @@ export default function Content() {
                 <View className="flex-1" />
               </View>
             </View>
-          </View>
+          </FadeInSection>
 
           <FadeInSection scrollY={scrollY} delay={100}>
             <Text className="text-4xl font-extrabold text-white text-center mb-3 leading-tight">
@@ -84,28 +79,34 @@ export default function Content() {
 
           {/* ====== ESTATÍSTICAS ====== */}
           <FadeInSection scrollY={scrollY} delay={100}>
-            <View className="px-6 mb-10">
-              <Text className="text-2xl font-bold text-white mb-4 text-center">
-                Por que usar o BookMe?
-              </Text>
-              <View className="flex-row flex-wrap justify-center gap-4">
-                <View className="bg-white/5 rounded-2xl p-4 w-[160px] items-center">
-                  <FontAwesome5 name="user-check" size={28} color="#10b981" />
-                  <Text className="text-white font-semibold mt-2 text-center">Profissionais verificados</Text>
-                </View>
-                <View className="bg-white/5 rounded-2xl p-4 w-[160px] items-center">
-                  <FontAwesome5 name="clock" size={28} color="#3b82f6" />
-                  <Text className="text-white font-semibold mt-2 text-center">Agendamento rápido</Text>
-                </View>
-                <View className="bg-white/5 rounded-2xl p-4 w-[160px] items-center">
-                  <FontAwesome5 name="shield-alt" size={28} color="#f59e0b" />
-                  <Text className="text-white font-semibold mt-2 text-center">Pagamento seguro</Text>
-                </View>
+            <View className="px-4 mb-10">
+              <View className="flex-row">
+                <StatCard
+                  icon="users"
+                  iconFamily="FontAwesome5"
+                  value="50k+"
+                  label="Usuários ativos"
+                  color="#3b82f6"
+                />
+                <StatCard
+                  icon="briefcase"
+                  iconFamily="FontAwesome5"
+                  value="12k+"
+                  label="Profissionais"
+                  color="#8b5cf6"
+                />
+                <StatCard
+                  icon="star"
+                  iconFamily="Ionicons"
+                  value="4.9"
+                  label="Avaliação média"
+                  color="#f59e0b"
+                />
               </View>
             </View>
 
             <View>
-              <View className="flex-row items-center">
+              <View className="flex-row items-center mb-4">
                 <View className="w-10 h-10 bg-blue-500/20 rounded-xl items-center justify-center mr-3">
                   <FontAwesome5 name="rocket" size={18} color="#3b82f6" />
                 </View>
@@ -127,51 +128,46 @@ export default function Content() {
           </FadeInSection>
         </View>
 
-        <View className="h-px bg-white/5 mx-6 mb-10" />
-
-
         {/* ====== NOSSOS VALORES ====== */}
-  
-
-          <View className="px-6 mb-12">
-            <View className="flex-row items-center mb-5">
-              <View className="w-10 h-10 bg-emerald-500/20 rounded-xl items-center justify-center mr-3">
-                <MaterialCommunityIcons
-                  name="heart-pulse"
-                  size={20}
-                  color="#10b981"
-                />
-              </View>
-              <Text className="text-2xl font-bold text-white">
-                Nossos Valores
-              </Text>
+        <View className="px-6 mb-12">
+          <View className="flex-row items-center mb-5">
+            <View className="w-10 h-10 bg-emerald-500/20 rounded-xl items-center justify-center mr-3">
+              <MaterialCommunityIcons
+                name="heart-pulse"
+                size={20}
+                color="#10b981"
+              />
             </View>
-
-            <ValueCard
-              icon="shield-check"
-              title="Confiança e Segurança"
-              description="Todos os profissionais passam por verificação. Avaliações reais de clientes garantem transparência total."
-              color="#3b82f6"
-            />
-            <ValueCard
-              icon="lightning-bolt"
-              title="Agilidade"
-              description="Do agendamento à conclusão, tudo acontece de forma rápida e sem complicações."
-              color="#f59e0b"
-            />
-            <ValueCard
-              icon="account-group"
-              title="Comunidade"
-              description="Construímos uma rede colaborativa onde profissionais crescem e clientes encontram sempre o melhor."
-              color="#8b5cf6"
-            />
-            <ValueCard
-              icon="cellphone-check"
-              title="Tecnologia Acessível"
-              description="Interface simples e intuitiva para que qualquer pessoa possa usar, independentemente da experiência com tecnologia."
-              color="#06b6d4"
-            />
+            <Text className="text-2xl font-bold text-white">
+              Nossos Valores
+            </Text>
           </View>
+
+          <ValueCard
+            icon="shield-check"
+            title="Confiança e Segurança"
+            description="Todos os profissionais passam por verificação. Avaliações reais de clientes garantem transparência total."
+            color="#3b82f6"
+          />
+          <ValueCard
+            icon="lightning-bolt"
+            title="Agilidade"
+            description="Do agendamento à conclusão, tudo acontece de forma rápida e sem complicações."
+            color="#f59e0b"
+          />
+          <ValueCard
+            icon="account-group"
+            title="Comunidade"
+            description="Construímos uma rede colaborativa onde profissionais crescem e clientes encontram sempre o melhor."
+            color="#8b5cf6"
+          />
+          <ValueCard
+            icon="cellphone-check"
+            title="Tecnologia Acessível"
+            description="Interface simples e intuitiva para que qualquer pessoa possa usar, independentemente da experiência com tecnologia."
+            color="#06b6d4"
+          />
+        </View>
 
         <View className="h-px bg-white/5 mx-6 mb-10" />
 
@@ -259,7 +255,7 @@ export default function Content() {
           />
         </View>
 
-        <View className="h-px bg-white/5 mx-6 mb-6" />
+        <View className="h-px bg-white/5 mx-6 mb-10" />
 
         {/* ====== POR QUE NOS ESCOLHER ====== */}
         <View className="px-6 mb-14">
@@ -314,9 +310,8 @@ export default function Content() {
       </ScrollView>
 
 
-
+     
     </View>
-    </FadeInSection>
   );
 }
 
