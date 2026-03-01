@@ -1,15 +1,17 @@
-import Footer from "@/components/home/Footer";
+import Footer from "@/components/sobre/Footer";
 import { Slot } from "expo-router";
-import { ScrollView } from "react-native";
+import { View, ScrollView } from "react-native";
 
 export default function Layout() {
   return (
-    <ScrollView
-      contentContainerStyle={{ flexGrow: 1 }}
-      showsVerticalScrollIndicator={false}
-    >
-      <Slot />
-      <Footer/>
-    </ScrollView>
+    <View style={{ flex: 1 }}>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <Slot />
+      </ScrollView>
+      <Footer />
+    </View>
   );
 }
