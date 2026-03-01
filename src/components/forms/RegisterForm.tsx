@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 type Props = {}
 
-const LoginForm = (props: Props) => {
+const RegisterForm = (props: Props) => {
     const [values, setValues] = useState({
         nome: '',
         email: '',
@@ -17,6 +17,7 @@ const LoginForm = (props: Props) => {
         senha: '',
         telefone: ''
     })
+
 
     const handleFieldChange = (field: keyof typeof values, value: string) => {
         setValues(prev => ({ ...prev, [field]: value }))
@@ -41,7 +42,7 @@ const LoginForm = (props: Props) => {
 
     return (
         <View className="flex-1 w-full max-h-dvh">
-            <Text className="color-[#EEEEEE] text-2xl font-bold mb-4">Login</Text>
+            <Text className="color-[#EEEEEE] text-2xl font-bold mb-4">Registar</Text>
 
             <Text className="color-[#EEEEEE] mb-6 text-base">
                 Bem vindo ao Book Me, o app de agendamento que conecta profissionais a seus clientes. Clientes podem buscar serviços e marcar horários diretamente no app, e os profissionais recebem notificações para organizar sua agenda.
@@ -113,14 +114,14 @@ const LoginForm = (props: Props) => {
                 </View>
 
                 <Pressable className="bg-black px-6 py-3 rounded-lg items-center mt-4">
-                    <Text className="color-[#EEEEEE] text-lg">Entrar</Text>
+                    <Text className="color-[#EEEEEE] text-lg">Enviar</Text>
                 </Pressable>
             </View>
         </View>
     )
 }
 
-export default LoginForm
+export default RegisterForm
 
 
 
