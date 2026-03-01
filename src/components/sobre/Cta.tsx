@@ -17,7 +17,7 @@ import { Text, TouchableOpacity, View } from "react-native";
             className="w-full bg-blue-500 py-4 rounded-2xl items-center mb-3"
             activeOpacity={0.85}
           >
-            <Link href="/cadastro" asChild>
+            <Link href="/signup" asChild>
               <Text className="text-white text-base font-bold tracking-wide">
                 Criar minha conta grátis
               </Text>
