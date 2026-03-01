@@ -1,5 +1,6 @@
 import { Pressable, Text, TextInput, View, ScrollView } from 'react-native'
 import { useState } from 'react'
+import { z } from 'zod'
 
 type Props = {}
 
@@ -18,26 +19,46 @@ const RegisterForm = (props: Props) => {
         telefone: ''
     })
 
+    // Schema Zod para validação dinâmica
+    const registerSchema = z.object({
+        nome: z.string().min(1, 'Nome é obrigatório'),
+        email: z.string().email('Email inválido'),
+        senha: z.string().min(8, 'Senha deve ter no mínimo 8 caracteres'),
+        telefone: z.string().refine(
+            (val) => val.replace(/\D/g, '').length >= 10,
+            { message: 'Telefone inválido' }
+        ),
+    })
 
     const handleFieldChange = (field: keyof typeof values, value: string) => {
         setValues(prev => ({ ...prev, [field]: value }))
+        // Validação dinâmica ao digitar
+        validateField(field, value)
     }
 
     const validateField = (field: keyof typeof values, value: string) => {
-        let error = ''
-        if (field === 'nome' && value.trim().length === 0) {
-            error = 'Nome é obrigatório'
-        } else if (
-            field === 'email' &&
-            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
-        ) {
-            error = 'Email inválido'
-        } else if (field === 'senha' && value.length < 8) {
-            error = 'Senha deve ter no mínimo 8 caracteres'
-        } else if (field === 'telefone' && value.replace(/\D/g, '').length < 10) {
-            error = 'Telefone inválido'
+        try {
+            const fieldSchema = registerSchema.shape[field] as unknown as z.ZodType<any, any, any>
+            fieldSchema.parse(value)
+            setErrors(prev => ({ ...prev, [field]: '' }))
+        } catch (err: any) {
+            setErrors(prev => ({ ...prev, [field]: err.errors?.[0]?.message || 'Campo inválido' }))
         }
-        setErrors(prev => ({ ...prev, [field]: error }))
+    }
+
+    const validateAll = () => {
+        try {
+            registerSchema.parse(values)
+            setErrors({ nome: '', email: '', senha: '', telefone: '' })
+            return true
+        } catch (err: any) {
+            const fieldErrors: any = { nome: '', email: '', senha: '', telefone: '' }
+            err.errors?.forEach((e: any) => {
+                if (e.path && e.path[0]) fieldErrors[e.path[0]] = e.message
+            })
+            setErrors(fieldErrors)
+            return false
+        }
     }
 
     return (
@@ -113,7 +134,14 @@ const RegisterForm = (props: Props) => {
                     </View>
                 </View>
 
-                <Pressable className="bg-black px-6 py-3 rounded-lg items-center mt-4">
+                <Pressable
+                    className="bg-black px-6 py-3 rounded-lg items-center mt-4"
+                    onPress={() => {
+                        if (validateAll()) {
+                            // Aqui você pode enviar os dados
+                        }
+                    }}
+                >
                     <Text className="color-[#EEEEEE] text-lg">Enviar</Text>
                 </Pressable>
             </View>
