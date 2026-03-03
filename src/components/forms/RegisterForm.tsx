@@ -9,14 +9,16 @@ const RegisterForm = (props: Props) => {
         nome: '',
         email: '',
         senha: '',
-        telefone: ''
+        telefone: '',
+        userType: 'cliente' as 'cliente' | 'profissional',
     })
 
     const [errors, setErrors] = useState({
         nome: '',
         email: '',
         senha: '',
-        telefone: ''
+        telefone: '',
+        userType: '',
     })
 
     // Schema Zod para validação dinâmica
@@ -28,6 +30,7 @@ const RegisterForm = (props: Props) => {
             (val) => val.replace(/\D/g, '').length >= 10,
             { message: 'Telefone inválido' }
         ),
+        userType: z.enum(['cliente', 'profissional']),
     })
 
     const handleFieldChange = (field: keyof typeof values, value: string) => {
@@ -42,20 +45,33 @@ const RegisterForm = (props: Props) => {
             fieldSchema.parse(value)
             setErrors(prev => ({ ...prev, [field]: '' }))
         } catch (err: any) {
-            setErrors(prev => ({ ...prev, [field]: err.errors?.[0]?.message || 'Campo inválido' }))
+            // Extrai a mensa÷ão do primeiro erro do Zod
+            let errorMsg = 'Campo inválido'
+            if (err instanceof z.ZodError) {
+                errorMsg = err.issues[0]?.message || 'Campo inválido'
+            } else if (err?.errors && Array.isArray(err.errors)) {
+                errorMsg = err.errors[0]?.message || 'Campo inválido'
+            }
+            setErrors(prev => ({ ...prev, [field]: errorMsg }))
         }
     }
 
     const validateAll = () => {
         try {
             registerSchema.parse(values)
-            setErrors({ nome: '', email: '', senha: '', telefone: '' })
+            setErrors({ nome: '', email: '', senha: '', telefone: '', userType: '' })
             return true
         } catch (err: any) {
-            const fieldErrors: any = { nome: '', email: '', senha: '', telefone: '' }
-            err.errors?.forEach((e: any) => {
-                if (e.path && e.path[0]) fieldErrors[e.path[0]] = e.message
-            })
+            const fieldErrors: any = { nome: '', email: '', senha: '', telefone: '', userType: '' }
+            if (err instanceof z.ZodError) {
+                err.issues.forEach((e: any) => {
+                    if (e.path && e.path[0]) fieldErrors[e.path[0]] = e.message
+                })
+            } else if (err?.errors && Array.isArray(err.errors)) {
+                err.errors.forEach((e: any) => {
+                    if (e.path && e.path[0]) fieldErrors[e.path[0]] = e.message
+                })
+            }
             setErrors(fieldErrors)
             return false
         }
@@ -69,6 +85,22 @@ const RegisterForm = (props: Props) => {
                 Bem vindo ao Book Me, o app de agendamento que conecta profissionais a seus clientes. Clientes podem buscar serviços e marcar horários diretamente no app, e os profissionais recebem notificações para organizar sua agenda.
             </Text>
 
+            {/* Toggle de perfil */}
+            <View className="flex-row gap-2 mb-6">
+                <Pressable
+                    className={`flex-1 py-3 rounded-lg ${values.userType === 'cliente' ? 'bg-blue-500' : 'bg-gray-700'}`}
+                    onPress={() => handleFieldChange('userType', 'cliente')}
+                >
+                    <Text className="text-center text-white font-semibold">Cliente</Text>
+                </Pressable>
+                <Pressable
+                    className={`flex-1 py-3 rounded-lg ${values.userType === 'profissional' ? 'bg-blue-500' : 'bg-gray-700'}`}
+                    onPress={() => handleFieldChange('userType', 'profissional')}
+                >
+                    <Text className="text-center text-white font-semibold">Profissional</Text>
+                </Pressable>
+            </View>
+
             <View>
                 <View>
                     <Text className="color-[#EEEEEE] mt-1">Nome</Text>
@@ -81,7 +113,7 @@ const RegisterForm = (props: Props) => {
                         onBlur={() => validateField('nome', values.nome)}
                     />
                     <View className="h-6">
-                        {errors.nome && <Text className="text-red-400 text-sm mt-1">{errors.nome}</Text>}
+                        {errors.nome && <Text className="text-yellow-400 text-sm mt-1">{errors.nome}</Text>}
                     </View>
                 </View>
 
@@ -98,7 +130,7 @@ const RegisterForm = (props: Props) => {
                         onBlur={() => validateField('email', values.email)}
                     />
                     <View className="h-6">
-                        {errors.email && <Text className="text-red-400 text-sm mt-1">{errors.email}</Text>}
+                        {errors.email && <Text className="text-yellow-400 text-sm mt-1">{errors.email}</Text>}
                     </View>
                 </View>
 
@@ -114,7 +146,7 @@ const RegisterForm = (props: Props) => {
                         onBlur={() => validateField('senha', values.senha)}
                     />
                     <View className="h-6">
-                        {errors.senha && <Text className="text-red-400 text-sm mt-1">{errors.senha}</Text>}
+                        {errors.senha && <Text className="text-yellow-400 text-sm mt-1">{errors.senha}</Text>}
                     </View>
                 </View>
 
@@ -130,7 +162,7 @@ const RegisterForm = (props: Props) => {
                         onBlur={() => validateField('telefone', values.telefone)}
                     />
                     <View className="h-6">
-                        {errors.telefone && <Text className="text-red-400 text-sm mt-1">{errors.telefone}</Text>}
+                        {errors.telefone && <Text className="text-yellow-400 text-sm mt-1">{errors.telefone}</Text>}
                     </View>
                 </View>
 
