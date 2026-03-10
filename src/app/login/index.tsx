@@ -1,13 +1,13 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
 type Props = {}
 
 const LogIn = (props: Props) => {
   return (
-    <View>
+    <ScrollView>
       <Text>LogIn</Text>
-    </View>
+    </ScrollView>
   )
 }
 
