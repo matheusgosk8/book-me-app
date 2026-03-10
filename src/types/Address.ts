@@ -1,6 +1,8 @@
-const addressSchema = z.object({
+import { z } from 'zod'
+
+export const addressSchema = z.object({
     cep: z.string().refine(
-        (val) => val.replace(/\D/g, '').length === 8,
+        (val) => String(val).replace(/\D/g, '').length === 8,
         { message: 'CEP deve ter 8 dígitos' }
     ),
     rua: z.string().min(3, 'Rua é obrigatória'),
@@ -10,3 +12,5 @@ const addressSchema = z.object({
 })
 
 export type AddressType = z.infer<typeof addressSchema>
+
+export default addressSchema
