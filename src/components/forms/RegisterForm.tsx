@@ -9,6 +9,7 @@ import {
 import AddressInfo from "../register/AddressInfo";
 import { formatCEP, formatCNPJ, formatCPF } from "@/utils/formatter";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { router } from "expo-router";
 
 
 type Props = {
@@ -141,15 +142,15 @@ const RegisterForm = ({ onSubmit }: Props) => {
   return (
 
 
-<KeyboardAwareScrollView
-  contentContainerStyle={{ flexGrow: 1, paddingBottom: 35}}
-  extraHeight={80}
-  enableOnAndroid
-  enableAutomaticScroll
-  extraScrollHeight={Platform.OS === 'ios' ? 20 : 0}
-  keyboardOpeningTime={0}
-  keyboardShouldPersistTaps="handled"
->
+    <KeyboardAwareScrollView
+      contentContainerStyle={{ flexGrow: 1, paddingBottom: 35 }}
+      extraHeight={80}
+      enableOnAndroid
+      enableAutomaticScroll
+      extraScrollHeight={Platform.OS === 'ios' ? 20 : 0}
+      keyboardOpeningTime={0}
+      keyboardShouldPersistTaps="handled"
+    >
       <View className="px-6 py-12">
         {/* ETAPA 0: SELEÇÃO DE PERFIL */}
         {step === 0 && (
@@ -192,6 +193,25 @@ const RegisterForm = ({ onSubmit }: Props) => {
                 </Text>
               </Pressable>
             </View>
+
+            <View className="mt-10 w-full px-4">
+              <Pressable
+                onPress={() => router.push("/login")}
+                className="active:opacity-70 items-center justify-center"
+                style={({ pressed }) => ({
+                  transform: [{ scale: pressed ? 0.98 : 1 }],
+                })}
+              >
+                <Text
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  className="text-white/60 text-base text-center"
+                >
+                  Já possui uma conta? <Text className="text-white font-bold underline">Fazer Login</Text>
+                </Text>
+              </Pressable>
+            </View>
+
           </View>
         )}
 
@@ -216,12 +236,12 @@ const RegisterForm = ({ onSubmit }: Props) => {
               validateField={validateField}
             />
             <Pressable
-              className="bg-blue-600 px-6 py-3 rounded-xl items-center justify-center mt-6 mb-4 w-full active:bg-blue-700"
+              className="bg-white px-6 py-3 rounded-xl items-center justify-center mt-6 mb-4 w-full active:bg-white/90"
               onPress={() => {
                 if (validateStep(1)) setStep(2)
               }}
             >
-              <Text className="color-white text-lg font-bold">Próximo</Text>
+              <Text className="text-blue-600 text-lg font-bold">Próximo</Text>
             </Pressable>
           </View>
         )}
@@ -246,13 +266,13 @@ const RegisterForm = ({ onSubmit }: Props) => {
               validateField={validateField}
             />
             <Pressable
-              className="bg-blue-600 px-6 py-3 rounded-xl items-center justify-center mt-6 mb-4 w-full active:bg-blue-700"
+              className="bg-white px-6 py-3 rounded-xl items-center justify-center mt-6 mb-4 w-full active:bg-white/90"
               disabled={!validateSchema(step2Schema, values).valid}
               onPress={() => {
                 if (validateStep(2)) setStep(3)
               }}
             >
-              <Text className="color-white text-lg font-bold">Próximo</Text>
+              <Text className="text-blue-600 text-lg font-bold">Próximo</Text>
             </Pressable>
           </View>
         )}
@@ -260,7 +280,7 @@ const RegisterForm = ({ onSubmit }: Props) => {
 
         {step === 3 && (
           <Pressable
-            className="bg-blue-600 px-6 py-4 rounded-xl items-center justify-center mt-6 mb-8 w-full active:bg-blue-700"
+            className="bg-white px-6 py-3 rounded-xl items-center justify-center mt-6 mb-4 w-full active:bg-white/90"
             onPress={() => {
               if (validateAll()) {
                 onSubmit?.(values)
@@ -271,9 +291,10 @@ const RegisterForm = ({ onSubmit }: Props) => {
               Criar Minha Conta
             </Text>
           </Pressable>
+
         )}
       </View>
-  </KeyboardAwareScrollView>  );
+    </KeyboardAwareScrollView>);
 };
 
 export default RegisterForm;

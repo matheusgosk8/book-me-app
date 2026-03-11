@@ -1,21 +1,18 @@
 import { Pressable, TextInput, View, ScrollView, Text } from 'react-native'
 import { useState } from 'react'
+import { router } from "expo-router";
 
 type Props = {}
 
 const LoginForm = (props: Props) => {
     const [values, setValues] = useState({
-        nome: '',
         email: '',
         senha: '',
-        telefone: ''
     })
 
     const [errors, setErrors] = useState({
-        nome: '',
         email: '',
         senha: '',
-        telefone: ''
     })
 
     const handleFieldChange = (field: keyof typeof values, value: string) => {
@@ -24,96 +21,80 @@ const LoginForm = (props: Props) => {
 
     const validateField = (field: keyof typeof values, value: string) => {
         let error = ''
-        if (field === 'nome' && value.trim().length === 0) {
-            error = 'Nome é obrigatório'
-        } else if (
+        if (
             field === 'email' &&
             !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
         ) {
             error = 'Email inválido'
         } else if (field === 'senha' && value.length < 8) {
             error = 'Senha deve ter no mínimo 8 caracteres'
-        } else if (field === 'telefone' && value.replace(/\D/g, '').length < 10) {
-            error = 'Telefone inválido'
         }
         setErrors(prev => ({ ...prev, [field]: error }))
     }
 
     return (
-        <View className="flex-1 w-full max-h-dvh">
-            <Text className="color-[#EEEEEE] text-2xl font-bold mb-4">Login</Text>
+        <View className="flex-1 w-full px-2">
+            {/* Título mais impactante */}
+            <Text className="text-white text-4xl font-bold mb-2">Login</Text>
 
-            <Text className="color-[#EEEEEE] mb-6 text-base">
-                Bem vindo ao Book Me, o app de agendamento que conecta profissionais a seus clientes. Clientes podem buscar serviços e marcar horários diretamente no app, e os profissionais recebem notificações para organizar sua agenda.
+            {/* Texto de apoio mais discreto e curto (UX melhor) */}
+            <Text className="text-white/60 text-base mb-8 leading-5">
+                Acesse sua conta para gerenciar seus agendamentos no Book Me.
             </Text>
 
-            <View>
+            <View className="gap-y-2">
+                {/* Campo de Email */}
                 <View>
-                    <Text className="color-[#EEEEEE] mt-1">Nome</Text>
-                    <TextInput
-                        placeholder="Seu nome"
-                        placeholderTextColor="#CCCCFF"
-                        className="bg-white/10 rounded-md px-4 py-3"
-                        value={values.nome}
-                        onChangeText={text => handleFieldChange('nome', text)}
-                        onBlur={() => validateField('nome', values.nome)}
-                    />
-                    <View className="h-6">
-                        {errors.nome && <Text className="text-red-400 text-sm mt-1">{errors.nome}</Text>}
-                    </View>
-                </View>
-
-                <View>
-                    <Text className="color-[#EEEEEE] mt-1">Email</Text>
+                    <Text className="text-white/80 ml-1 mb-1 font-medium">Email</Text>
                     <TextInput
                         placeholder="email@exemplo.com"
-                        placeholderTextColor="#CCCCFF"
+                        placeholderTextColor="rgba(255, 255, 255, 0.4)"
                         keyboardType="email-address"
                         autoCapitalize="none"
-                        className="bg-white/10 rounded-md px-4 py-3"
+                        className="bg-white/10 border border-white/10 rounded-2xl px-4 py-4 text-white text-base focus:border-white/30"
                         value={values.email}
                         onChangeText={text => handleFieldChange('email', text)}
                         onBlur={() => validateField('email', values.email)}
                     />
-                    <View className="h-6">
-                        {errors.email && <Text className="text-red-400 text-sm mt-1">{errors.email}</Text>}
+                    <View className="h-5 justify-center">
+                        {errors.email && <Text className="text-red-400 text-xs ml-2">{errors.email}</Text>}
                     </View>
                 </View>
 
+                {/* Campo de Senha */}
                 <View>
-                    <Text className="color-[#EEEEEE] mt-1">Senha</Text>
+                    <Text className="text-white/80 ml-1 mb-1 font-medium">Senha</Text>
                     <TextInput
                         placeholder="••••••••"
-                        placeholderTextColor="#CCCCFF"
+                        placeholderTextColor="rgba(255, 255, 255, 0.4)"
                         secureTextEntry={true}
-                        className="bg-white/10 rounded-md px-4 py-3"
+                        className="bg-white/10 border border-white/10 rounded-2xl px-4 py-4 text-white text-base focus:border-white/30"
                         value={values.senha}
                         onChangeText={text => handleFieldChange('senha', text)}
                         onBlur={() => validateField('senha', values.senha)}
                     />
-                    <View className="h-6">
-                        {errors.senha && <Text className="text-red-400 text-sm mt-1">{errors.senha}</Text>}
+                    <View className="h-5 justify-center">
+                        {errors.senha && <Text className="text-red-400 text-xs ml-2">{errors.senha}</Text>}
                     </View>
                 </View>
 
-                <View>
-                    <Text className="color-[#EEEEEE] mt-1">Telefone</Text>
-                    <TextInput
-                        placeholder="(00) 00000-0000"
-                        placeholderTextColor="#CCCCFF"
-                        keyboardType="phone-pad"
-                        className="bg-white/10 rounded-md px-4 py-3"
-                        value={values.telefone}
-                        onChangeText={text => handleFieldChange('telefone', text)}
-                        onBlur={() => validateField('telefone', values.telefone)}
-                    />
-                    <View className="h-6">
-                        {errors.telefone && <Text className="text-red-400 text-sm mt-1">{errors.telefone}</Text>}
-                    </View>
-                </View>
+                {/* Botão Entrar com estilo de destaque */}
+                <Pressable
+                    style={({ pressed }) => ({ transform: [{ scale: pressed ? 0.98 : 1 }] })}
+                    className="bg-white py-4 rounded-2xl items-center mt-4 active:bg-white/90 shadow-lg"
+                >
+                    <Text className="text-blue-600 font-bold text-lg">Entrar</Text>
+                </Pressable>
 
-                <Pressable className="bg-black px-6 py-3 rounded-lg items-center mt-4">
-                    <Text className="color-[#EEEEEE] text-lg">Entrar</Text>
+                {/* Link para recuperar senha */}
+                <Pressable 
+                onPress={() => router.push("/forgot")}
+                className="mt-4 items-center">
+                    <Text
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  className="text-white/60 text-base text-center"
+                >Esqueceu sua senha?</Text>
                 </Pressable>
             </View>
         </View>
