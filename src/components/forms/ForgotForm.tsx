@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, Pressable, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
 
-export default function ForgotPasswordForm() {
+
+function ForgotPasswordForm() {
   const router = useRouter();
   const [step, setStep] = useState(0); // 0: Escolha, 1: Input, 2: Código
   const [method, setMethod] = useState<'email' | 'telefone' | null>(null);
@@ -132,3 +133,5 @@ export default function ForgotPasswordForm() {
     </View>
   );
 }
+
+export default ForgotPasswordForm;
