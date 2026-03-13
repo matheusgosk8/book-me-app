@@ -9,6 +9,9 @@ import {
 import AddressInfo from "../register/AddressInfo";
 import { formatCEP, formatCNPJ, formatCPF } from "@/utils/formatter";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { router } from "expo-router";
+import ServiceForm from '@/components/forms/ServiceForm';
+import { useLocalSearchParams } from "expo-router";
 
 
 type Props = {
@@ -16,8 +19,9 @@ type Props = {
 }
 
 const RegisterForm = ({ onSubmit }: Props) => {
-  // Controla se o usuário já escolheu o perfil (Etapa 0) ou está no form (Etapa 1)
-  const [step, setStep] = useState(0);
+
+  const params = useLocalSearchParams();
+  const [step, setStep] = useState(params.step === '4' ? 4 : 0);
 
   const [values, setValues] = useState<RegisterType>({
     nome: "",
@@ -57,11 +61,9 @@ const RegisterForm = ({ onSubmit }: Props) => {
   const registerSchema = createRegisterSchema(values.userType)
 
   const validateField = (field: keyof typeof values, value: unknown) => {
-    // choose schema that contains the field
     const schemaToUse: any = (addressSchema as any).shape?.[field] ? addressSchema : basicsSchema
     const fieldError = validateSchemaField(schemaToUse, field as any, value);
 
-    // Confirmação de senha depende de mais de um campo.
     const confirmPasswordError =
       field === "confirmaSenha" && !fieldError && String(value) !== values.senha
         ? "Senhas não coincidem"
@@ -99,181 +101,119 @@ const RegisterForm = ({ onSubmit }: Props) => {
     return false;
   };
 
-  // Schemas por etapa
-  const step1Schema = basicsSchema
-  const step2Schema = addressSchema
-
   const validateStep = (s: number) => {
     if (s === 1) {
-      const res = validateSchema(step1Schema, values);
+      const res = validateSchema(basicsSchema, values);
       if (res.valid) {
-        // limpa erros dessa etapa
         setErrors(prev => ({ ...prev, nome: '', email: '', cpf: '', cnpj: '', senha: '', confirmaSenha: '', telefone: '' }))
         return true;
       }
-      const fieldErrors = { ...emptyErrors };
-      Object.entries(res.errors).forEach(([k, msg]) => {
-        const path = k as keyof typeof emptyErrors;
-        if (path) fieldErrors[path] = msg;
-      });
-      setErrors(fieldErrors);
       return false;
     }
-
     if (s === 2) {
-      const res = validateSchema(step2Schema, values);
-      if (res.valid) {
-        setErrors(prev => ({ ...prev, rua: '', logradouro: '', cidade: '', estado: '', cep: '' }))
-        return true;
-      }
-      const fieldErrors = { ...emptyErrors };
-      Object.entries(res.errors).forEach(([k, msg]) => {
-        const path = k as keyof typeof emptyErrors;
-        if (path) fieldErrors[path] = msg;
-      });
-      setErrors(fieldErrors);
-      return false;
+      const res = validateSchema(addressSchema, values);
+      return res.valid;
     }
-
     return true;
   };
 
   return (
-
-
-<KeyboardAwareScrollView
-  contentContainerStyle={{ flexGrow: 1, paddingBottom: 35}}
-  extraHeight={80}
-  enableOnAndroid
-  enableAutomaticScroll
-  extraScrollHeight={Platform.OS === 'ios' ? 20 : 0}
-  keyboardOpeningTime={0}
-  keyboardShouldPersistTaps="handled"
->
+    <KeyboardAwareScrollView
+      contentContainerStyle={{ flexGrow: 1, paddingBottom: 35 }}
+      extraHeight={80}
+      enableOnAndroid
+      keyboardShouldPersistTaps="handled"
+    >
       <View className="px-6 py-12">
-        {/* ETAPA 0: SELEÇÃO DE PERFIL */}
         {step === 0 && (
           <View className="flex-1 justify-center py-10">
-            <Text className="color-white text-3xl font-bold mb-2">
-              Seja bem-vindo!
-            </Text>
-            <Text className="color-white/60 text-lg mb-10">
-              Como você pretende utilizar o Book Me?
-            </Text>
+            <Text className="color-white text-3xl font-bold mb-2">Seja bem-vindo!</Text>
+            <Text className="color-white/60 text-lg mb-10">Como você pretende utilizar o Book Me?</Text>
 
             <View className="gap-y-4">
               <Pressable
-                onPress={() => {
-                  setValues({ ...values, userType: "cliente" });
-                  setStep(1);
-                }}
+                onPress={() => { setValues({ ...values, userType: "cliente" }); setStep(1); }}
                 className="bg-white/5 border border-white/10 p-6 rounded-2xl active:bg-white/10"
               >
-                <Text className="color-white text-xl font-bold mb-1">
-                  Sou Cliente
-                </Text>
-                <Text className="color-white/50">
-                  Quero buscar serviços e agendar horários.
-                </Text>
+                <Text className="color-white text-xl font-bold mb-1">Sou Cliente</Text>
+                <Text className="color-white/50">Quero buscar serviços e agendar horários.</Text>
               </Pressable>
 
               <Pressable
-                onPress={() => {
-                  setValues({ ...values, userType: "profissional" });
-                  setStep(1);
-                }}
+                onPress={() => { setValues({ ...values, userType: "profissional" }); setStep(1); }}
                 className="bg-white/5 border border-white/10 p-6 rounded-2xl active:bg-white/10"
               >
-                <Text className="color-white text-xl font-bold mb-1">
-                  Sou Profissional
-                </Text>
-                <Text className="color-white/50">
-                  Quero oferecer meus serviços e gerenciar agenda.
+                <Text className="color-white text-xl font-bold mb-1">Sou Profissional</Text>
+                <Text className="color-white/50">Quero oferecer meus serviços e gerenciar agenda.</Text>
+              </Pressable>
+            </View>
+
+            <View className="mt-10 w-full px-4">
+              <Pressable onPress={() => router.push("/login")} className="items-center justify-center">
+                <Text className="text-white/60 text-base text-center">
+                  Já possui uma conta? <Text className="text-white font-bold underline">Fazer Login</Text>
                 </Text>
               </Pressable>
             </View>
           </View>
         )}
 
-        {/* ETAPA 1: FORMULÁRIO DE DADOS */}
         {step === 1 && (
           <View>
             <Pressable onPress={() => setStep(0)} className="mb-6 py-2">
-              <Text className="color-white font-bold">
-                ← Voltar e alterar perfil
-              </Text>
+              <Text className="color-white font-bold">← Voltar e alterar perfil</Text>
             </Pressable>
-
             <Text className="color-[#EEEEEE] text-2xl font-bold mb-4">
-              Cadastro de{" "}
-              {values.userType === "cliente" ? "Cliente" : "Profissional"}
+              Cadastro de {values.userType === "cliente" ? "Cliente" : "Profissional"}
             </Text>
-
-            <BasicsInfo
-              values={values}
-              errors={errors}
-              handleFieldChange={handleFieldChange}
-              validateField={validateField}
-            />
+            <BasicsInfo values={values} errors={errors} handleFieldChange={handleFieldChange} validateField={validateField} />
             <Pressable
-              className="bg-blue-600 px-6 py-3 rounded-xl items-center justify-center mt-6 mb-4 w-full active:bg-blue-700"
-              onPress={() => {
-                if (validateStep(1)) setStep(2)
-              }}
+              className="bg-white px-6 py-3 rounded-xl items-center justify-center mt-6 w-full"
+              onPress={() => { if (validateStep(1)) setStep(2) }}
             >
-              <Text className="color-white text-lg font-bold">Próximo</Text>
+              <Text className="text-blue-600 text-lg font-bold">Próximo</Text>
             </Pressable>
           </View>
         )}
+
         {step === 2 && (
           <View>
             <Pressable onPress={() => setStep(1)} className="mb-6 py-2">
-              <Text className="color-white font-bold">
-                ← Voltar para infomrações básicas
-              </Text>
+              <Text className="color-white font-bold">← Voltar para informações básicas</Text>
             </Pressable>
-
             <Text className="color-[#EEEEEE] text-2xl font-bold mb-4">
-              Cadastro de{" "}
-              {values.userType === "cliente" ? "Cliente" : "Profissional"}
-              - endereço
+              Cadastro de {values.userType === "cliente" ? "Cliente" : "Profissional"} - Endereço
             </Text>
-
-            <AddressInfo
-              value={values}
-              errors={errors}
-              handleFieldChange={handleFieldChange}
-              validateField={validateField}
-            />
+            <AddressInfo value={values} errors={errors} handleFieldChange={handleFieldChange} validateField={validateField} />
             <Pressable
-              className="bg-blue-600 px-6 py-3 rounded-xl items-center justify-center mt-6 mb-4 w-full active:bg-blue-700"
-              disabled={!validateSchema(step2Schema, values).valid}
-              onPress={() => {
-                if (validateStep(2)) setStep(3)
-              }}
+              className="bg-white px-6 py-3 rounded-xl items-center justify-center mt-6 w-full"
+              onPress={() => { if (validateStep(2)) setStep(3) }}
             >
-              <Text className="color-white text-lg font-bold">Próximo</Text>
+              <Text className="text-blue-600 text-lg font-bold">Próximo</Text>
             </Pressable>
           </View>
         )}
 
-
         {step === 3 && (
-          <Pressable
-            className="bg-blue-600 px-6 py-4 rounded-xl items-center justify-center mt-6 mb-8 w-full active:bg-blue-700"
-            onPress={() => {
-              if (validateAll()) {
-                onSubmit?.(values)
-              }
-            }}
-          >
-            <Text className="color-white text-lg font-bold">
-              Criar Minha Conta
-            </Text>
-          </Pressable>
+          <View>
+            <Text className="text-white/60 mb-6 text-center">Tudo pronto! Clique abaixo para criar sua conta.</Text>
+            <Pressable
+              className="bg-white px-6 py-3 rounded-xl items-center justify-center w-full"
+              onPress={() => { if (validateAll()) { onSubmit?.(values); setStep(4); } }}
+            >
+              <Text className="text-blue-600 text-lg font-bold">Criar Minha Conta</Text>
+            </Pressable>
+          </View>
+        )}
+
+        {step === 4 && (
+          <View className="mt-4">
+            <ServiceForm />
+          </View>
         )}
       </View>
-  </KeyboardAwareScrollView>  );
+    </KeyboardAwareScrollView>
+  );
 };
 
 export default RegisterForm;
