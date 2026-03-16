@@ -196,24 +196,59 @@ const RegisterForm = ({ onSubmit }: Props) => {
 
         {step === 3 && (
           <View>
-            <Text className="text-white/60 mb-6 text-center">Tudo pronto! Clique abaixo para criar sua conta.</Text>
+            <Text className="text-white/60 mb-6 text-center text-lg">
+              {values.userType === 'profissional'
+                ? "Quase lá! Agora vamos cadastrar seu primeiro serviço."
+                : "Tudo pronto! Clique abaixo para criar sua conta."}
+            </Text>
             <Pressable
-              className="bg-white px-6 py-3 rounded-xl items-center justify-center w-full"
-              onPress={() => { if (validateAll()) { onSubmit?.(values); setStep(4); } }}
+              className="bg-white px-6 py-4 rounded-2xl items-center justify-center w-full shadow-lg active:bg-white/90"
+              onPress={() => {
+                if (validateAll()) {
+                  onSubmit?.(values);
+                  // Se for profissional, vai pro form de serviço. Se for cliente, vai pra Home.
+                  if (values.userType === 'profissional') {
+                    setStep(4);
+                  } else {
+                    router.replace("/home");
+                  }
+                }
+              }}
             >
-              <Text className="text-blue-600 text-lg font-bold">Criar Minha Conta</Text>
+              <Text className="text-blue-600 text-lg font-bold">
+                {values.userType === 'profissional' ? "Continuar" : "Criar Minha Conta"}
+              </Text>
             </Pressable>
           </View>
         )}
 
         {step === 4 && (
-          <View className="mt-4">
+          <View>
+            {/* Botão opcional para voltar se o profissional desistir de cadastrar o serviço na hora */}
+            <Pressable onPress={() => router.replace("/home")} className="mb-6 py-2">
+              <Text className="color-white font-bold">← Voltar</Text>
+            </Pressable>
             <ServiceForm />
           </View>
         )}
       </View>
     </KeyboardAwareScrollView>
-  );
-};
-
+  )
+}
 export default RegisterForm;
+
+{/*Matheus, segue a estrutura para o BE em Go:
+const dataToBackend = {
+    nome: values.nome,           // string
+    email: values.email,         // string
+    cpf: values.cpf,             // string (mesmo sendo números, tratamos como string por causa da máscara)
+    cnpj: values.cnpj,           // string (opcional/nullable se for cliente)
+    telefone: values.telefone,   // string
+    cep: values.cep,             // string
+    rua: values.rua,             // string
+    logradouro: values.logradouro, // string
+    cidade: values.cidade,       // string
+    estado: values.estado,       // string (2 caracteres)
+    userType: values.userType,   // string (enum: 'cliente' | 'profissional')
+};*/}
+

@@ -4,7 +4,7 @@ export type Service = {
   id: string;
   titulo: string;
   profissional: string;
-  preco: string;
+  preco: number;
   categoria: string;
 };
 
@@ -16,9 +16,7 @@ type ServiceContextType = {
 const ServiceContext = createContext<ServiceContextType | undefined>(undefined);
 
 export function ServiceProvider({ children }: { children: React.ReactNode }) {
-  const [servicos, setServicos] = useState<Service[]>([
-    { id: '1', titulo: 'Corte de Cabelo', profissional: 'João Silva', preco: 'R$ 50,00', categoria: 'Beleza' },
-  ]);
+  const [servicos, setServicos] = useState<Service[]>([]);
 
   const addService = (novo: Omit<Service, 'id'>) => {
     const serviceWithId = { ...novo, id: Math.random().toString() };
