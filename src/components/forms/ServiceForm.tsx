@@ -21,9 +21,16 @@ const ServiceForm = () => {
             return;
         }
 
+        const valorNumerico = parseFloat(service.valor.replace(',', '.'));
+
+        if (isNaN(valorNumerico)) {
+            alert("Digite um valor válido");
+            return;
+        }
+
         addService({
             titulo: service.nome,
-            preco: `R$ ${service.valor}`,
+            preco: valorNumerico,
             categoria: service.categoria,
             profissional: "Você (Profissional)",
         });
@@ -40,7 +47,7 @@ const ServiceForm = () => {
 
             <View className="gap-y-6">
                 <View>
-                    <Text className="text-white/80 mb-2 ml-1">Nome do Serviço</Text>
+                    <Text className="text-white/80 mb-2 ml-1 font-medium">Nome do Serviço</Text>
                     <TextInput
                         placeholder="Ex: Corte de Cabelo Masculino"
                         placeholderTextColor="rgba(255, 255, 255, 0.4)"
@@ -51,30 +58,39 @@ const ServiceForm = () => {
                 </View>
 
                 <View>
-                    <Text className="text-white/80 mb-2 ml-1">Valor do Serviço (R$)</Text>
+                    <Text className="text-white/80 mb-2 ml-1 font-medium">Valor do Serviço (R$)</Text>
                     <TextInput
                         placeholder="0,00"
                         placeholderTextColor="rgba(255, 255, 255, 0.4)"
                         keyboardType="numeric"
-                        className="bg-white/5 border border-white/10 p-4 rounded-2xl color-white text-base focus:border-blue-500"
+                        className="bg-white/10 border border-white/10 p-4 rounded-2xl text-white text-base focus:border-white/30"
                         value={service.valor}
                         onChangeText={(t) => setService({ ...service, valor: t })}
                     />
                 </View>
 
                 <View>
-                    <Text className="text-white/80 mb-3 ml-1">Categoria</Text>
-                    <View className="w-full flex-row flex-wrap gap-2">
+                    <Text className="text-white/80 mb-3 ml-1 font-medium">Categoria</Text>
+
+                    <View className="flex-row flex-wrap">
                         {categorias.map((cat) => (
                             <Pressable
                                 key={cat}
                                 onPress={() => setService({ ...service, categoria: cat })}
-                                className={`px-4 py-2 rounded-full border ${service.categoria === cat
+                                className={`px-4 py-2 rounded-full border m-1 self-start ${service.categoria === cat
                                         ? "bg-blue-600 border-blue-600"
-                                        : "bg-white/5 border-white/10"
+                                        : "bg-white/10 border-white/10"
                                     }`}
                             >
-                                <Text className={`text-sm ${service.categoria === cat ? "text-white font-bold" : "text-white/60"}`}>
+                                <Text
+                                    className={`text-sm ${service.categoria === cat ? "text-white font-bold" : "text-white/60"
+                                        }`}
+                                    style={{
+                                        includeFontPadding: false,
+                                        paddingRight: 6,
+                                        minWidth: 'auto'
+                                    }}
+                                >
                                     {cat}
                                 </Text>
                             </Pressable>
