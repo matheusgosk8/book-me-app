@@ -2,10 +2,13 @@ import { View, Text, TextInput, Pressable } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import { useServices } from '@/providers/ServiceContext';
+import { useAuth } from "@/providers/AuthContext";
 
 const ServiceForm = () => {
     const router = useRouter();
     const { addService } = useServices();
+
+    const {user} = useAuth()
 
     const [service, setService] = useState({
         nome: "",
@@ -32,7 +35,7 @@ const ServiceForm = () => {
             titulo: service.nome,
             preco: valorNumerico,
             categoria: service.categoria,
-            profissional: "Você (Profissional)",
+            profissional: user?.nome || "Desconecido",
         });
 
         router.replace("/home");
@@ -83,12 +86,12 @@ const ServiceForm = () => {
                                     }`}
                             >
                                 <Text
+                                    includeFontPadding={true}
                                     className={`text-sm ${service.categoria === cat ? "text-white font-bold" : "text-white/60"
                                         }`}
                                     style={{
-                                        includeFontPadding: false,
                                         paddingRight: 6,
-                                        minWidth: 'auto'
+                                        lineHeight: 18,
                                     }}
                                 >
                                     {cat}

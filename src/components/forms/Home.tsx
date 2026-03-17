@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import { useServices } from "@/providers/ServiceContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
-import { useAuth } from '/useA';
+import { useAuth } from "@/providers/AuthContext";
 
 export default function Home() {
   const router = useRouter();
@@ -13,6 +13,8 @@ export default function Home() {
   const servicosExibidos = categoriaSelecionada
     ? servicos.filter(s => s.categoria === categoriaSelecionada)
     : servicos;
+
+    const { user } = useAuth();
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["top"]}>

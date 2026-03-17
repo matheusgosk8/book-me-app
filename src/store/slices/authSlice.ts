@@ -17,22 +17,13 @@ export const authSlice = createSlice({
     setAuth(state, action: PayloadAction<{ userId: string; token: string }>) {
       state.userId = action.payload.userId;
       state.token = action.payload.token;
-      // Salva no localStorage
-      localStorage.setItem('userId', action.payload.userId);
-      localStorage.setItem('token', action.payload.token);
     },
     clearAuth(state) {
       state.userId = null;
       state.token = null;
-      localStorage.removeItem('userId');
-      localStorage.removeItem('token');
     },
-    loadAuth(state) {
-      state.userId = localStorage.getItem('userId');
-      state.token = localStorage.getItem('token');
-    },
+    // Persist/rehydration is handled by redux-persist + PersistGate elsewhere in the app
   },
 });
-
-export const { setAuth, clearAuth, loadAuth } = authSlice.actions;
+export const { setAuth, clearAuth } = authSlice.actions;
 export const authReducer = authSlice.reducer;

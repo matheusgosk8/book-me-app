@@ -117,6 +117,7 @@ const RegisterForm = ({ onSubmit }: Props) => {
     return true;
   };
 
+
   return (
     <KeyboardAwareScrollView
       contentContainerStyle={{ flexGrow: 1, paddingBottom: 35 }}
@@ -205,12 +206,11 @@ const RegisterForm = ({ onSubmit }: Props) => {
               className="bg-white px-6 py-4 rounded-2xl items-center justify-center w-full shadow-lg active:bg-white/90"
               onPress={() => {
                 if (validateAll()) {
-                  onSubmit?.(values);
                   // Se for profissional, vai pro form de serviço. Se for cliente, vai pra Home.
                   if (values.userType === 'profissional') {
                     setStep(4);
                   } else {
-                    router.replace("/home");
+                    onSubmit?.(values);
                   }
                 }
               }}
@@ -225,7 +225,7 @@ const RegisterForm = ({ onSubmit }: Props) => {
         {step === 4 && (
           <View>
             {/* Botão opcional para voltar se o profissional desistir de cadastrar o serviço na hora */}
-            <Pressable onPress={() => router.replace("/home")} className="mb-6 py-2">
+            <Pressable onPress={() => onSubmit?.(values)} className="mb-6 py-2">
               <Text className="color-white font-bold">← Voltar</Text>
             </Pressable>
             <ServiceForm />

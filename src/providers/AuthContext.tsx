@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useCallback } from 'react';
 
 interface User {
   nome: string;
@@ -16,9 +16,10 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
-  function signIn(nome: string, email: string) {
+
+  const signIn = useCallback((nome: string, email: string) => {
     setUser({ nome, email });
-  }
+  }, [user]);
 
   function signOut() {
     setUser(null);

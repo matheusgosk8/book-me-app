@@ -1,7 +1,12 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
+import Constants from 'expo-constants';
 
-// Base URL (override with environment variable in production)
-const BASE_URL = process.env.API_URL || 'http://localhost:3000'
+const API_URL =
+  Constants.expoConfig?.extra?.API_URL ??
+  (Constants.manifest as any)?.extra?.API_URL ??
+  'http://localhost:3000';
+
+
 
 let _csrfToken: string | null = null
 
@@ -19,7 +24,7 @@ export function clearCsrfToken() {
 
 function createPublicApi(): AxiosInstance {
   const instance = axios.create({
-    baseURL: BASE_URL,
+    baseURL: API_URL,
     headers: {
       'Content-Type': 'application/json',
     },
@@ -48,7 +53,7 @@ function createPublicApi(): AxiosInstance {
 
 function createApi(): AxiosInstance {
   const instance = axios.create({
-    baseURL: BASE_URL,
+    baseURL: API_URL,
     headers: {
       'Content-Type': 'application/json',
     },
