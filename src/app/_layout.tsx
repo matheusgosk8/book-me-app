@@ -5,6 +5,7 @@ import { View } from 'react-native';
 import { AppWrapper } from '@/components/AppWrapper';
 import { ServiceProvider } from '@/providers/ServiceContext';
 import { SafeAreaProvider } from 'react-native-safe-area-context'; 
+import ReduxProvider from "@/providers/ReduxProvider";
 
 export default function Layout() {
   const [fontsLoaded] = useFonts({
@@ -17,6 +18,7 @@ export default function Layout() {
   }
 
   return (
+    <ReduxProvider>
     <SafeAreaProvider>
       <ServiceProvider>
         <AppWrapper>
@@ -24,5 +26,6 @@ export default function Layout() {
         </AppWrapper>
       </ServiceProvider>
     </SafeAreaProvider>
+    </ReduxProvider>
   );
 }
