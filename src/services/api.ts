@@ -1,26 +1,47 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
-import Constants from 'expo-constants';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
 
-const API_URL =
-  Constants.expoConfig?.extra?.API_URL ??
-  (Constants.manifest as any)?.extra?.API_URL ??
-  'http://localhost:3000';
+// Forçando o IP e a porta que funcionaram no navegador do seu celular
+const API_URL = 'http://192.168.1.108:8000'; 
 
+console.log("🛠️ TESTE DE CONEXÃO - URL ATUAL:", API_URL);
 
+let _csrfToken: string | null = null;
 
-let _csrfToken: string | null = null
-
-/**
- * Use this to set the CSRF token from anywhere (e.g. after login).
- * Replace this with a Redux selector or secure storage when ready.
- */
 export function setCsrfToken(token: string) {
-  _csrfToken = token
+  _csrfToken = token;
 }
 
 export function clearCsrfToken() {
-  _csrfToken = null
+  _csrfToken = null;
 }
+
+// Função para configurar os logs de erro detalhados
+const setupInterceptors = (instance: AxiosInstance) => {
+  instance.interceptors.request.use(
+    (config) => {
+      // Log para sabermos exatamente onde o App está tentando bater
+      console.log(`🚀 Chamando: ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`);
+      return config;
+    },
+    (error) => Promise.reject(error)
+  );
+
+  instance.interceptors.response.use(
+    (res: AxiosResponse) => res,
+    (error) => {
+      // Esse log vai nos dizer se foi Timeout, Recusado ou 404
+      if (error.response) {
+        console.log("❌ Erro na resposta do Servidor:", error.response.status, error.response.data);
+      } else if (error.request) {
+        console.log("❌ O sinal saiu, mas o Servidor não respondeu (Network Error). Verifique o Firewall/IP.");
+        console.log("Detalhes técnicos:", error.toJSON().message);
+      } else {
+        console.log("❌ Erro ao configurar a requisição:", error.message);
+      }
+      return Promise.reject(error);
+    }
+  );
+};
 
 function createPublicApi(): AxiosInstance {
   const instance = axios.create({
@@ -28,27 +49,9 @@ function createPublicApi(): AxiosInstance {
     headers: {
       'Content-Type': 'application/json',
     },
-  })
-
-  // Request interceptor (public) — useful for logging/headers
-  instance.interceptors.request.use(
-    (config: any) => {
-      // add any default public headers here
-      return config
-    },
-    (error) => Promise.reject(error)
-  )
-
-  // Response interceptor (public)
-  instance.interceptors.response.use(
-    (res: AxiosResponse) => res,
-    (error) => {
-      // normalize or log public errors here
-      return Promise.reject(error)
-    }
-  )
-
-  return instance
+  });
+  setupInterceptors(instance);
+  return instance;
 }
 
 function createApi(): AxiosInstance {
@@ -57,46 +60,29 @@ function createApi(): AxiosInstance {
     headers: {
       'Content-Type': 'application/json',
     },
-  })
+  });
 
-  // Request interceptor (private API) — attach CSRF token or auth
   instance.interceptors.request.use(
     (config: any) => {
-      // Inject CSRF token if available
       if (_csrfToken) {
-        config.headers = config.headers ?? {}
-        // common header name for CSRF — adjust to your backend
-        ;(config.headers as Record<string, string>)['X-CSRF-Token'] = _csrfToken
+        config.headers = config.headers ?? {};
+        (config.headers as Record<string, string>)['X-CSRF-Token'] = _csrfToken;
       }
-
-      // TODO: when Redux/auth is available, attach Authorization header here
-      // e.g. const token = store.getState().auth.token
-      // if (token) config.headers.Authorization = `Bearer ${token}`
-
-      return config
+      return config;
     },
     (error) => Promise.reject(error)
-  )
+  );
 
-  // Response interceptor (private)
-  instance.interceptors.response.use(
-    (res: AxiosResponse) => res,
-    (error) => {
-      // central place to handle 401, refresh token logic, global toast, etc.
-      // For now, just rethrow.
-      return Promise.reject(error)
-    }
-  )
-
-  return instance
+  setupInterceptors(instance);
+  return instance;
 }
 
-export const publicApi = createPublicApi()
-export const api = createApi()
+export const publicApi = createPublicApi();
+export const api = createApi();
 
 export default {
   publicApi,
   api,
   setCsrfToken,
   clearCsrfToken,
-}
+};

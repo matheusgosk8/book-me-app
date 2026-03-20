@@ -29,6 +29,7 @@ const Signup = (props: Props) => {
     
           2 - Melhorar a aparência dos toasts
           3- / book-me-app\src\services\api.ts - colocar o token no interceptador de requisições privadas
+          4- colocar o token em um bearer
     */
     
     type SignupResponse = {
