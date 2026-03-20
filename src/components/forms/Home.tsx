@@ -6,20 +6,29 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { useAuth } from "@/providers/AuthContext";
+import { useEffect } from "react";
 
 export default function Home() {
   const router = useRouter();
   const { servicos } = useServices();
   const [categoriaSelecionada, setCategoriaSelecionada] = useState<string | null>(null);
   const categorias = ["Beleza", "Saúde", "Eventos", "Educação", "Manutenção"]
+
   const servicosExibidos = categoriaSelecionada
     ? servicos.filter(s => s.categoria === categoriaSelecionada)
     : servicos;
 
-    const authState = useSelector((state: RootState)=> state.auth)
-    const {token, userId} = authState
+  const authState = useSelector((state: RootState) => state.auth)
+  const { token, userId } = authState
 
-    const {user} = useAuth()
+  const { user } = useAuth()
+
+  useEffect(() => {
+    console.log("=== TESTE REDUX NA HOME ===");
+    console.log("Token:", token);
+    console.log("User ID:", userId);
+    console.log("==========================");
+  }, [token, userId]);
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
@@ -45,7 +54,7 @@ export default function Home() {
           </Pressable>
         </View>
 
-    
+
         <View>
           <FlatList
             data={["Todos", ...categorias]}

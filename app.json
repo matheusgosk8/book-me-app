@@ -1,19 +1,20 @@
 {
-  "scheme": "acme",
-  "userInterfaceStyle": "automatic",
-  "orientation": "default",
-  "web": {
-    "output": "static"
-  },
-  "plugins": [
-    [
-      "expo-router",
-      {
-        "origin": "https://n"
-      }
-    ],
-    "expo-font"
-  ],
-  "name": "book-me-app",
-  "slug": "book-me-app"
+  "expo": {
+    "name": "book-me-app",
+    "slug": "book-me-app",
+    "version": "1.0.0",
+    "scheme": "acme",
+    "android": {
+      "usesCleartextTraffic": true
+    },
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "root": "./src/app"
+        }
+      ],
+      "expo-font"
+    ]
+  }
 }
