@@ -9,17 +9,17 @@ import {
 import AddressInfo from "../register/AddressInfo";
 import { formatCEP, formatCNPJ, formatCPF } from "@/utils/formatter";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import ServiceForm from '@/components/forms/ServiceForm';
-import { useLocalSearchParams } from "expo-router";
-
+import { useDispatch } from "react-redux";
+import { setAuth } from "@/store/slices/authSlice";
 
 type Props = {
   onSubmit?: (values: Record<string, any>) => void
 }
 
 const RegisterForm = ({ onSubmit }: Props) => {
-
+  const dispatch = useDispatch();
   const params = useLocalSearchParams();
   const [step, setStep] = useState(params.step === '4' ? 4 : 0);
 
@@ -117,6 +117,27 @@ const RegisterForm = ({ onSubmit }: Props) => {
     return true;
   };
 
+  const handleFinalSubmit = () => {
+    if (validateAll()) {
+      // Mapeando para o Redux em Inglês antes de seguir
+      dispatch(setAuth({
+        user: {
+          id: Math.floor(Math.random() * 1000), // Mock ID até integrar com API
+          name: values.nome,
+          email: values.email,
+          role: values.userType === 'profissional' ? 'provider' : 'customer'
+        },
+        token: "temp_token_from_registration"
+      }));
+
+      if (values.userType === 'profissional') {
+        setStep(4);
+      } else {
+        onSubmit?.(values); // Envia para o backend (Go)
+        router.replace("/home");
+      }
+    }
+  };
 
   return (
     <KeyboardAwareScrollView
@@ -169,7 +190,7 @@ const RegisterForm = ({ onSubmit }: Props) => {
             </Text>
             <BasicsInfo values={values} errors={errors} handleFieldChange={handleFieldChange} validateField={validateField} />
             <Pressable
-              className="bg-white px-6 py-3 rounded-xl items-center justify-center mt-6 w-full"
+              className="bg-white px-6 py-3 rounded-xl items-center justify-center mt-6 w-full shadow-md active:bg-white/90"
               onPress={() => { if (validateStep(1)) setStep(2) }}
             >
               <Text className="text-blue-600 text-lg font-bold">Próximo</Text>
@@ -187,7 +208,7 @@ const RegisterForm = ({ onSubmit }: Props) => {
             </Text>
             <AddressInfo value={values} errors={errors} handleFieldChange={handleFieldChange} validateField={validateField} />
             <Pressable
-              className="bg-white px-6 py-3 rounded-xl items-center justify-center mt-6 w-full"
+              className="bg-white px-6 py-3 rounded-xl items-center justify-center mt-6 w-full shadow-md active:bg-white/90"
               onPress={() => { if (validateStep(2)) setStep(3) }}
             >
               <Text className="text-blue-600 text-lg font-bold">Próximo</Text>
@@ -204,16 +225,7 @@ const RegisterForm = ({ onSubmit }: Props) => {
             </Text>
             <Pressable
               className="bg-white px-6 py-4 rounded-2xl items-center justify-center w-full shadow-lg active:bg-white/90"
-              onPress={() => {
-                if (validateAll()) {
-                  // Se for profissional, vai pro form de serviço. Se for cliente, vai pra Home.
-                  if (values.userType === 'profissional') {
-                    setStep(4);
-                  } else {
-                    onSubmit?.(values);
-                  }
-                }
-              }}
+              onPress={handleFinalSubmit}
             >
               <Text className="text-blue-600 text-lg font-bold">
                 {values.userType === 'profissional' ? "Continuar" : "Criar Minha Conta"}
@@ -224,7 +236,6 @@ const RegisterForm = ({ onSubmit }: Props) => {
 
         {step === 4 && (
           <View>
-            {/* Botão opcional para voltar se o profissional desistir de cadastrar o serviço na hora */}
             <Pressable onPress={() => onSubmit?.(values)} className="mb-6 py-2">
               <Text className="color-white font-bold">← Voltar</Text>
             </Pressable>
@@ -235,20 +246,20 @@ const RegisterForm = ({ onSubmit }: Props) => {
     </KeyboardAwareScrollView>
   )
 }
+
 export default RegisterForm;
 
 {/*Matheus, segue a estrutura para o BE em Go:
 const dataToBackend = {
-    nome: values.nome,           // string
-    email: values.email,         // string
-    cpf: values.cpf,             // string (mesmo sendo números, tratamos como string por causa da máscara)
-    cnpj: values.cnpj,           // string (opcional/nullable se for cliente)
-    telefone: values.telefone,   // string
-    cep: values.cep,             // string
-    rua: values.rua,             // string
+    nome: values.nome,             // string
+    email: values.email,           // string
+    cpf: values.cpf,               // string 
+    cnpj: values.cnpj,             // string (opcional/nullable se for cliente)
+    telefone: values.telefone,     // string
+    cep: values.cep,               // string
+    rua: values.rua,               // string
     logradouro: values.logradouro, // string
-    cidade: values.cidade,       // string
-    estado: values.estado,       // string (2 caracteres)
-    userType: values.userType,   // string (enum: 'cliente' | 'profissional')
+    cidade: values.cidade,         // string
+    estado: values.estado,         // string (2 caracteres)
+    userType: values.userType,     // string (enum: 'cliente' | 'profissional')
 };*/}
-

@@ -1,29 +1,40 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: 'customer' | 'provider'
+}
 
 interface AuthState {
-  userId: string | null;
+  user: User | null;
   token: string | null;
+  isAuthenticated: boolean;
 }
 
 const initialState: AuthState = {
-  userId: null,
+  user: null,
   token: null,
+  isAuthenticated: false,
 };
 
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
-  reducers: {
-    setAuth(state, action: PayloadAction<{ userId: string; token: string }>) {
-      state.userId = action.payload.userId;
+  reducers:{
+    setAuth(state, action: PayloadAction<{user: User; token: string}>) {
+      state.user = action.payload.user;
       state.token = action.payload.token;
+      state.isAuthenticated = true;
     },
-    clearAuth(state) {
-      state.userId = null;
+    clearAuth(state){
+      state.user = null;
       state.token = null;
+      state.isAuthenticated = false;
     },
-    // Persist/rehydration is handled by redux-persist + PersistGate elsewhere in the app
   },
 });
-export const { setAuth, clearAuth } = authSlice.actions;
+
+export const {setAuth, clearAuth} = authSlice.actions;
 export const authReducer = authSlice.reducer;

@@ -2,13 +2,15 @@ import { View, Text, TextInput, Pressable } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import { useServices } from '@/providers/ServiceContext';
-import { useAuth } from "@/providers/AuthContext";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 const ServiceForm = () => {
     const router = useRouter();
     const { addService } = useServices();
 
-    const {user} = useAuth()
+    // Lendo o usuário do Redux (Interface em Inglês)
+    const { user } = useSelector((state: RootState) => state.auth);
 
     const [service, setService] = useState({
         nome: "",
@@ -20,7 +22,7 @@ const ServiceForm = () => {
 
     const handleSaveService = () => {
         if (!service.nome || !service.valor || !service.categoria) {
-            alert("Preencha tudo!");
+            alert("Preencha todos os campos!");
             return;
         }
 
@@ -35,9 +37,10 @@ const ServiceForm = () => {
             titulo: service.nome,
             preco: valorNumerico,
             categoria: service.categoria,
-            profissional: user?.nome || "Desconecido",
+            profissional: user?.name || "Profissional Desconhecido",
         });
 
+        alert("Serviço adicionado com sucesso!");
         router.replace("/home");
     };
 
@@ -49,6 +52,12 @@ const ServiceForm = () => {
             </Text>
 
             <View className="gap-y-6">
+                {/* Nome do Profissional (Informativo) */}
+                <View className="bg-white/5 p-3 rounded-xl border border-white/5">
+                    <Text className="text-white/40 text-[10px] uppercase font-bold">Cadastrando como:</Text>
+                    <Text className="text-white/80 font-medium">{user?.name}</Text>
+                </View>
+
                 <View>
                     <Text className="text-white/80 mb-2 ml-1 font-medium">Nome do Serviço</Text>
                     <TextInput
@@ -86,7 +95,6 @@ const ServiceForm = () => {
                                     }`}
                             >
                                 <Text
-                                    includeFontPadding={true}
                                     className={`text-sm ${service.categoria === cat ? "text-white font-bold" : "text-white/60"
                                         }`}
                                     style={{

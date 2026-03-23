@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { store } from '@/store/store';
 
-// Forçando o IP e a porta que funcionaram no navegador do seu celular
-const API_URL = 'http://192.168.1.108:8000'; 
+const API_URL = 'http://192.168.1.108:8000';
 
 console.log("🛠️ TESTE DE CONEXÃO - URL ATUAL:", API_URL);
 
@@ -11,8 +11,8 @@ export function setCsrfToken(token: string) {
   _csrfToken = token;
 }
 
-export function clearCsrfToken() {
-  _csrfToken = null;
+export function clearCsrfToken(token: string) {
+  _csrfToken = token;
 }
 
 // Função para configurar os logs de erro detalhados
@@ -64,10 +64,17 @@ function createApi(): AxiosInstance {
 
   instance.interceptors.request.use(
     (config: any) => {
-      if (_csrfToken) {
-        config.headers = config.headers ?? {};
-        (config.headers as Record<string, string>)['X-CSRF-Token'] = _csrfToken;
+      const state = store.getState();
+      const token = state.auth.token;
+
+      config.headers = config.headers ?? {};
+      if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
       }
+      if (_csrfToken) {
+        config.headers['X-CSRF-Token'] = _csrfToken;
+      }
+
       return config;
     },
     (error) => Promise.reject(error)
