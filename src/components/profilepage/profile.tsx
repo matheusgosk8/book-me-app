@@ -33,7 +33,7 @@ export default function Profile() {
         <View className="items-center mt-8 px-6">
           <View className="w-24 h-24 bg-blue-600 rounded-full items-center justify-center mb-4 shadow-xl">
             <Text className="text-white text-4xl font-bold">
-              {user?.nome ? user.nome.charAt(0).toUpperCase() : 'U'}
+              {user?.nome ? user.name.charAt(0).toUpperCase() : 'U'}
             </Text>
           </View>
           
