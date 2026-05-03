@@ -26,7 +26,6 @@ export default function Home() {
     <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
       <View style={{ flex: 1 }}>
 
-        {/* Header Dinâmico */}
         <View className="px-6 flex-row justify-between items-center mb-6 mt-4">
           <View>
             <Text className="text-white/60 text-sm">
@@ -37,18 +36,7 @@ export default function Home() {
             </Text>
           </View>
           
-          <Pressable
-            onPress={() => router.push("/profile")}
-            className="bg-white/5 p-2 pr-4 rounded-2xl border border-white/10 flex-row items-center"
-          >
-            {/* Avatar */}
-            <View className="w-8 h-8 bg-blue-600 rounded-lg items-center justify-center mr-3 shadow-lg">
-              <Text className="text-white font-bold text-xs">
-                {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
-              </Text>
-            </View>
-            <Text className="text-white font-medium text-sm">Meu Perfil</Text>
-          </Pressable>
+      
         </View>
 
         {/* Filtros de Categoria (Apenas para Clientes) */}

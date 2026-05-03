@@ -10,7 +10,7 @@ function Header() {
         className="flex-row justify-between items-center px-4 lg:px-6 py-4 shadow-sm"
         style={{ paddingTop: top }}
       >
-        <Link href="/" className="font-roboto text-2xl font-bold text-black">
+        <Link href="/" className="font-roboto text-2xl font-bold text-white">
           Book Me
         </Link>
         <View className="flex-row gap-4">
