@@ -15,7 +15,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: ['auth'],
+  whitelist: ['auth', 'user'], // Apenas auth e user serão persistidos
 };
 
 const rootReducer = combineReducers({

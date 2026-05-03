@@ -1,16 +1,15 @@
 import React from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router'; 
-import { useAuth } from '../context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Profile() {
     const router = useRouter();
-    const {user, signOut} = useAuth();
+    // const {user, signOut} = useAuth();
 
     const handleLogout = async () => {
-        await signOut();
+        // await signOut();
         router.replace("/login")
     };
 
@@ -33,12 +32,12 @@ export default function Profile() {
         <View className="items-center mt-8 px-6">
           <View className="w-24 h-24 bg-blue-600 rounded-full items-center justify-center mb-4 shadow-xl">
             <Text className="text-white text-4xl font-bold">
-              {user?.nome ? user.name.charAt(0).toUpperCase() : 'U'}
+              {/* {user?.nome ? user.name.charAt(0).toUpperCase() : 'U'} */}
             </Text>
           </View>
           
-          <Text className="text-white text-2xl font-bold">{user?.nome || 'Usuário'}</Text>
-          <Text className="text-white/60 text-base">{user?.email || 'email@exemplo.com'}</Text>
+          <Text className="text-white text-2xl font-bold">{'Usuário'}</Text>
+          <Text className="text-white/60 text-base">{'email@exemplo.com'}</Text>
           
           <View className="bg-blue-600/20 px-4 py-1 rounded-full mt-3 border border-blue-600/30">
             <Text className="text-blue-400 font-medium">Profissional</Text>

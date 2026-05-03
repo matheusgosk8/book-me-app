@@ -46,7 +46,12 @@ const CustomInput = ({ label, placeholder, value, error, onChange, onBlur, error
             <FontAwesome5Icon name={passwordVisible ? "eye" : "eye-slash"} size={16} color="#CCCCFF" />
           </TouchableOpacity>
         ) : rightAdornment ? (
-          <View className="ml-2">{rightAdornment}</View>
+          // prevent rendering plain strings directly under a View (causes RN web error)
+          typeof rightAdornment === 'string' || typeof rightAdornment === 'number' ? (
+            <Text className="ml-2">{String(rightAdornment)}</Text>
+          ) : (
+            <View className="ml-2">{rightAdornment}</View>
+          )
         ) : null}
       </View>
       <View className="h-6">

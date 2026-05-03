@@ -6,6 +6,9 @@ import { useDispatch } from 'react-redux';
 import { setAuth } from '@/store/slices/authSlice';
 import { email } from 'zod';
 import { publicApi } from '@/services/api';
+import * as SecureStore from 'expo-secure-store';
+import { LoginResponse } from '@/types/User';
+import { ApiResponse } from '@/types/Api';
 
 type Props = {}
 
@@ -51,29 +54,45 @@ const LoginForm = (props: Props) => {
     const handleLogin = async () => {
         try {
             console.log("Tentando acesso ao servidor...");
-            const response = await publicApi.post('/public/login', {
+            const response = await publicApi.post<ApiResponse<LoginResponse>>('/public/login', {
                 email: values.email,
                 senha: values.senha,
             });
 
-            const { user, token } = response.data;
+            const { user, access_token, refresh_token } = response.data.data;
 
+            //Refresh token pode ser armazenado usando SecureStore ou AsyncStorage, dependendo da sua escolha de persistência
+
+            
+
+   
             dispatch(setAuth({
+                token: access_token,
                 user: {
-                    id: user.id,
-                    name: user.name, 
-                    email: values.email, 
-                    role: user.role 
-                },
-                token: token,
-            }));
+                    id: parseInt(user.id),
+                    name: user.nome,
+                    email: user.email,
+                    role: user.role
+                }
+            }))
+
+            // salva refresh token de forma segura
+            try {
+                if (refresh_token) {
+                    await SecureStore.setItemAsync('refreshToken', refresh_token);
+                    console.log('[login] refresh token salvo no SecureStore');
+                }
+            } catch (e) {
+                console.warn('[login] falha ao salvar refresh token no SecureStore', e);
+            }
 
             console.log("Login realizado com sucesso!");
             router.replace("/home");
 
         } catch (error: any) {
             console.error("Erro detalhado:", error.response?.status, error.message);
-            alert("Erro ao conectar: " + (error.response?.data?.message || "Verifique sua conexão"));
+            const serverMessage = error.response?.data?.message || "Ocorreu um erro inesperado. Tente novamente.";
+            alert(serverMessage);
         }
     };
 
