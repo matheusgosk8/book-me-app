@@ -1,105 +1,129 @@
 import RegisterForm from '@/components/forms/RegisterForm'
-import BasicsInfo from '@/components/register/BasicsInfo'
+import { RegisterType } from '@/schemas/register'
 import { publicApi } from '@/services/api'
-import addressSchema, { AddressType } from '@/types/Address'
-import { BasicsInfoType } from '@/types/User'
 import { ScrollView, Alert } from 'react-native'
 import { useRouter } from 'expo-router'
-import { RootState } from '@/store/store'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { setAuth } from '@/store/slices/authSlice'
+import { ApiResponse } from '@/types/Api'
+import { RegisterSuccessData } from '@/types/User'
+import * as SecureStore from 'expo-secure-store'
 
 type Props = {}
 
-const Signup = (props: Props) => {
+function mapUserTypeToApi(userType: 'cliente' | 'profissional'): 'CUSTOMER' | 'PROVIDER' {
+    return userType === 'cliente' ? 'CUSTOMER' : 'PROVIDER'
+}
 
-    const router = useRouter();
+/** Monta corpo conforme contrato da API; no formulário, `rua` é o nome da via e `logradouro` é número/complemento. */
+function buildRegisterPayload(values: RegisterType) {
+    const digits = (s: string) => String(s).replace(/\D/g, '')
+    const cep = digits(values.cep)
+    const telefone = digits(values.telefone)
+    const estado = values.estado.trim().toUpperCase()
+    const streetLine = values.rua.trim()
+    const streetNumber = values.logradouro.trim()
+
+    const userCommon = {
+        nome: values.nome.trim(),
+        email: values.email.trim().toLowerCase(),
+        senha: values.senha,
+        userType: mapUserTypeToApi(values.userType),
+        telefone,
+        cep,
+        cidade: values.cidade.trim(),
+        estado,
+        logradouro: streetLine,
+        rua: streetNumber,
+    }
+
+    const user =
+        values.userType === 'cliente'
+            ? { ...userCommon, cpf: digits(values.cpf) }
+            : { ...userCommon, cnpj: digits(values.cnpj) }
+
+    return {
+        user,
+        address: {
+            street: `${streetLine}, ${streetNumber}`,
+            city: values.cidade.trim(),
+            state: estado,
+            postal_code: cep,
+            country: 'BR',
+        },
+    }
+}
+
+const Signup = (props: Props) => {
+    const router = useRouter()
     const dispatch = useDispatch()
 
-    //Assim que ajustar o backend, esse tipo de resposta deve ser ajustado para refletir a resposta real da API
-    /*
-        type SignupResponse = {
-          data: {
-            id: string,
-            token: string,
-          },
-            code: number,
-            message: string
-          }
-    
-          2 - Melhorar a aparência dos toasts
-          3- / book-me-app\src\services\api.ts - colocar o token no interceptador de requisições privadas
-          4- colocar o token em um bearer
-    */
-    
-    type SignupResponse = {
-        user: {
-            id: string,
-            cep: string,
-            cidade: string,
-            cnpj: string,
-            confirmaSenha: string,
-            cpf: string,
-            email: string,
-            estado: string,
-            logradouro: string,
-            nome: string,
-            rua: string,
-            senha: string,
-            telefone: string,
-            userType: string,
-        },
-        token: string,
-        code: number,
-        message: string
-}
+    const handleSubmit = async (values: RegisterType) => {
+        console.log('Registro submetido')
 
+        try {
+            const payload = buildRegisterPayload(values)
+            const response = await publicApi.post<ApiResponse<RegisterSuccessData>>(
+                '/public/register',
+                payload,
+            )
 
-const handleSubmit = async (values: any) => {
-    console.log('Registro submetido:', values)
+            const envelope = response.data?.data
+            const statusOk =
+                response.status === 200 &&
+                envelope?.access_token &&
+                envelope?.user
 
-    const cleanPayload = (v: any) => {
-        const out = { ...v }
-        if (typeof out.cpf === 'string') out.cpf = out.cpf.replace(/\D/g, '')
-        if (typeof out.cep === 'string') out.cep = out.cep.replace(/\D/g, '')
-        if (typeof out.cnpj === 'string') out.cnpj = out.cnpj.replace(/\D/g, '')
-        if (typeof out.telefone === 'string') out.telefone = out.telefone.replace(/\D/g, '')
-        return out
-    }
+            if (!statusOk) {
+                const msg =
+                    envelope?.message ||
+                    (response.data as { message?: string })?.message ||
+                    'Erro ao registrar usuário.'
+                Alert.alert('Erro', msg)
+                return
+            }
 
-    try {
-        const payload = cleanPayload(values)
-        const response = await publicApi.post<SignupResponse>('/public/register', payload)
+            const { user, access_token, refresh_token } = envelope
 
-        if (response.status === 200 || response.data.code === 200) {
-            console.log('Registro bem-sucedido:', response.data)
+            const role = values.userType === 'profissional' ? 'provider' : 'customer'
 
+            dispatch(
+                setAuth({
+                    token: access_token,
+                    user: {
+                        id: Number.parseInt(user.id, 10) || 0,
+                        name: user.nome,
+                        email: user.email,
+                        role,
+                    },
+                }),
+            )
 
-            dispatch(setAuth({
-                token: response.data.token,
-                userId: response.data.user.id
-            }))
+            try {
+                if (refresh_token) {
+                    await SecureStore.setItemAsync('refreshToken', refresh_token)
+                }
+            } catch (e) {
+                console.warn('[signup] falha ao salvar refresh token no SecureStore', e)
+            }
 
             router.replace('/home')
-            return
+        } catch (err: any) {
+            console.error('Erro na requisição de registro:', err)
+            const serverMsg =
+                err?.response?.data?.message ||
+                err?.response?.data?.Message ||
+                err?.message ||
+                'Erro de conexão'
+            Alert.alert('Erro', String(serverMsg))
         }
-
-        const msg = response.data?.message || 'Erro ao registrar usuário.'
-        Alert.alert('Erro', msg)
-
-    } catch (err: any) {
-        console.error('Erro na requisição de registro:', err)
-        const serverMsg = err?.response?.data?.Message || err?.message || 'Erro de conexão'
-        Alert.alert('Erro', String(serverMsg))
     }
 
-}
-
-return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="px-4 py-6">
-        <RegisterForm onSubmit={handleSubmit} />
-    </ScrollView>
-)
+    return (
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="px-4 py-6">
+            <RegisterForm onSubmit={handleSubmit} />
+        </ScrollView>
+    )
 }
 
 export default Signup

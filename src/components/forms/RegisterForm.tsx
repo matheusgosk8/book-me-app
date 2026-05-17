@@ -1,4 +1,4 @@
-import { Pressable, Text, View, Platform } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { useState } from "react";
 import { createBasicsSchema, addressSchema, createRegisterSchema, RegisterType } from '@/schemas/register'
 import BasicsInfo from "../register/BasicsInfo";
@@ -11,15 +11,13 @@ import { formatCEP, formatCNPJ, formatCPF } from "@/utils/formatter";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { router, useLocalSearchParams } from "expo-router";
 import ServiceForm from '@/components/forms/ServiceForm';
-import { useDispatch } from "react-redux";
-import { setAuth } from "@/store/slices/authSlice";
 
 type Props = {
-  onSubmit?: (values: Record<string, any>) => void
+  onSubmit?: (values: RegisterType) => Promise<void> | void
 }
 
 const RegisterForm = ({ onSubmit }: Props) => {
-  const dispatch = useDispatch();
+  const [submitting, setSubmitting] = useState(false);
   const params = useLocalSearchParams();
   const [step, setStep] = useState(params.step === '4' ? 4 : 0);
 
@@ -117,25 +115,19 @@ const RegisterForm = ({ onSubmit }: Props) => {
     return true;
   };
 
-  const handleFinalSubmit = () => {
-    if (validateAll()) {
-      // Mapeando para o Redux em Inglês antes de seguir
-      dispatch(setAuth({
-        user: {
-          id: Math.floor(Math.random() * 1000), // Mock ID até integrar com API
-          name: values.nome,
-          email: values.email,
-          role: values.userType === 'profissional' ? 'provider' : 'customer'
-        },
-        token: "temp_token_from_registration"
-      }));
+  const handleFinalSubmit = async () => {
+    if (!validateAll()) return;
 
-      if (values.userType === 'profissional') {
-        setStep(4);
-      } else {
-        onSubmit?.(values); // Envia para o backend (Go)
-        router.replace("/home");
-      }
+    if (values.userType === 'profissional') {
+      setStep(4);
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await onSubmit?.(values);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -224,11 +216,16 @@ const RegisterForm = ({ onSubmit }: Props) => {
                 : "Tudo pronto! Clique abaixo para criar sua conta."}
             </Text>
             <Pressable
-              className="bg-white px-6 py-4 rounded-2xl items-center justify-center w-full shadow-lg active:bg-white/90"
+              disabled={submitting}
+              className="bg-white px-6 py-4 rounded-2xl items-center justify-center w-full shadow-lg active:bg-white/90 opacity-100 disabled:opacity-50"
               onPress={handleFinalSubmit}
             >
               <Text className="text-blue-600 text-lg font-bold">
-                {values.userType === 'profissional' ? "Continuar" : "Criar Minha Conta"}
+                {submitting
+                  ? "Criando conta..."
+                  : values.userType === 'profissional'
+                    ? "Continuar"
+                    : "Criar Minha Conta"}
               </Text>
             </Pressable>
           </View>
@@ -236,7 +233,7 @@ const RegisterForm = ({ onSubmit }: Props) => {
 
         {step === 4 && (
           <View>
-            <Pressable onPress={() => onSubmit?.(values)} className="mb-6 py-2">
+            <Pressable onPress={() => setStep(3)} className="mb-6 py-2">
               <Text className="color-white font-bold">← Voltar</Text>
             </Pressable>
             <ServiceForm />
@@ -248,18 +245,3 @@ const RegisterForm = ({ onSubmit }: Props) => {
 }
 
 export default RegisterForm;
-
-{/*Matheus, segue a estrutura para o BE em Go:
-const dataToBackend = {
-    nome: values.nome,             // string
-    email: values.email,           // string
-    cpf: values.cpf,               // string 
-    cnpj: values.cnpj,             // string (opcional/nullable se for cliente)
-    telefone: values.telefone,     // string
-    cep: values.cep,               // string
-    rua: values.rua,               // string
-    logradouro: values.logradouro, // string
-    cidade: values.cidade,         // string
-    estado: values.estado,         // string (2 caracteres)
-    userType: values.userType,     // string (enum: 'cliente' | 'profissional')
-};*/}

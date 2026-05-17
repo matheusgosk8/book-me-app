@@ -21,3 +21,16 @@ export type LoginResponse = {
         role: 'customer' | 'provider'
     }
 }
+
+/** Corpo interno de `response.data.data` no POST /public/register */
+export type RegisterSuccessData = {
+    user: {
+        id: string
+        nome: string
+        email: string
+    }
+    access_token: string
+    refresh_token: string
+    code?: number
+    message?: string
+}
